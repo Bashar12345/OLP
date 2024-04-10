@@ -2,7 +2,7 @@
 import os
 from OnlineLearningPlatform import app
 
-port = int(os.environ.get("PORT", 5050)) 
+port = int(os.environ.get("PORT", 5000)) 
 
 if __name__ == '__main__':
    
