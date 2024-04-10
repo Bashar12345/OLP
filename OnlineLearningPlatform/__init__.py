@@ -1,41 +1,18 @@
 import os
 from flask import Flask
-# from flask_sqlalchemy import SQLAlchemy
+from flask_restx import Api
 from .configaration import Config
 from .models import db
-from flask_restx import Api, fields
-
-Project_DIR = os.path.dirname(__file__)
-print(Project_DIR)
+from .courses.routes import courses
+from .enrollments.routes import enrollments
+from .for_errors.error_handler import errors
 
 # Create an instance of Api for API documentation
 api = Api(version='1.0', title='Online Learning Platform API',
-        description='API endpoints for managing courses and enrollments')
-
-# Define models for serialization
-course_model = api.model('Course', {
-    'course_id': fields.Integer,
-    'title': fields.String,
-    'description': fields.String,
-    'instructor': fields.String,
-    'duration': fields.Integer,
-    'price': fields.Float
-})
-
-enrollment_model = api.model('Enrollment', {
-    'enrollment_id': fields.Integer,
-    'student_name': fields.String,
-    'course_id': fields.Integer,
-    'enrollment_date': fields.String
-})
-
-# Define API namespaces
-courses_ns = api.namespace('courses', description='Operations related to courses')
-enrollments_ns = api.namespace('enrollments', description='Operations related to enrollments')
-
+          description='API endpoints for managing courses and enrollments')
 
 def create_app(config_class=Config):
-    app = Flask(__name__)  # run all package as initial flask app
+    app = Flask(__name__)
 
     # Load configurations from Config class
     app.config.from_object(config_class)
@@ -55,18 +32,15 @@ def create_app(config_class=Config):
             print(f"Database connection failed: {e}")
 
     # Register blueprints
-    from OnlineLearningPlatform.courses.routes import courses
-    from OnlineLearningPlatform.enrollments.routes import enrollments
-    from OnlineLearningPlatform.for_errors.error_handler import errors
-
-    app.register_blueprint(courses)
-    app.register_blueprint(enrollments)
+    app.register_blueprint(courses, url_prefix='/courses')
+    app.register_blueprint(enrollments, url_prefix='/enrollments')
     app.register_blueprint(errors)
 
-
     # Integrate the API documentation setup with the Flask application
+    from .courses.routes import courses_ns
+    from .enrollments.routes import enrollments_ns
+    api.add_namespace(courses_ns)
+    api.add_namespace(enrollments_ns)
     api.init_app(app)
 
     return app
-
-

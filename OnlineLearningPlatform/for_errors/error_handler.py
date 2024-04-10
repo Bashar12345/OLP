@@ -1,18 +1,14 @@
-# from flask import Blueprint, render_template
+from flask import Blueprint, jsonify
 
-# errors = Blueprint('errors', __name__)
+# Create a blueprint for error handling routes
+errors = Blueprint('errors', __name__)
 
+# Route to handle 404 errors (Not Found)
+@errors.app_errorhandler(404)
+def not_found_error(error):
+    return jsonify({'error': 'Not Found'}), 404
 
-# @errors.app_errorhandler(404)
-# def error_404():
-#     return render_template('error/404.html'), 404
-
-
-# @errors.app_errorhandler(403)
-# def error_403():
-#     return render_template('error/403.html'), 403
-
-
-# @errors.app_errorhandler(500)
-# def error_500():
-#     return render_template('error/500.html'), 500
+# Route to handle 500 errors (Internal Server Error)
+@errors.app_errorhandler(500)
+def internal_server_error(error):
+    return jsonify({'error': 'Internal Server Error'}), 500
