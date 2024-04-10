@@ -26,6 +26,7 @@ try:
     engine = create_engine(postgres_uri)
     connection = engine.connect()
     connection.close()
+
     print("Database connection successful!")
 except Exception as e:
     print(f"Database connection failed: {e}")

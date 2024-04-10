@@ -4,25 +4,36 @@ from flask import Flask
 from flask_restx import Api
 from .configaration import Config 
 from flask_sqlalchemy import SQLAlchemy
-# Import and register blueprints/namespaces
-from OnlineLearningPlatform.courses.routes import course_ns
-from OnlineLearningPlatform.enrollments.routes import enrollment_ns
+from flask_migrate import Migrate
+
 
 app = Flask(__name__)
-app.config.from_object(Config)  # Pass the Config class to configure the Flask app
-api = Api(app, version='1.0', title='Online Learning Platform API', description='An API for managing courses and enrollments')
+app.config.from_object(Config)  
 
 # Initialize Flask-SQLAlchemy
-
 db=SQLAlchemy(app)
+
+# Initialize Flask-Migrate
+migrate = Migrate(app, db)
+
+# Create an application context
+with app.app_context():
+    # Create the tables
+    db.create_all()
+
+
+api = Api(app, version='1.0', title='Online Learning Platform API', description='An API for managing courses and enrollments')
+
+
 # db.init_app(app)  # Initialize the db with the Flask app
 # Try to create the database engine
-
+# Import and register blueprints/namespaces
+from OnlineLearningPlatform.courses.routes import course_ns  # noqa: E402
+from OnlineLearningPlatform.enrollments.routes import enrollment_ns  # noqa: E402
 
 
 api.add_namespace(course_ns)
 api.add_namespace(enrollment_ns)
-
 
 
 
